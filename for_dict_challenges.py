@@ -1,3 +1,5 @@
+from collections import Counter
+
 # Задание 1
 # Дан список учеников, нужно посчитать количество повторений каждого имени ученика
 # Пример вывода:
@@ -12,7 +14,7 @@ students = [
     {'first_name': 'Маша'},
     {'first_name': 'Петя'},
 ]
-# ???
+[print(f"{j}: {k}") for j,k in Counter([i["first_name"] for i in students]).items()]
 
 
 # Задание 2
@@ -26,7 +28,7 @@ students = [
     {'first_name': 'Маша'},
     {'first_name': 'Оля'},
 ]
-# ???
+print(f'Самое частое имя среди учеников: {Counter([i["first_name"] for i in students]).most_common(1)[0][0]}')
 
 
 # Задание 3
@@ -51,7 +53,9 @@ school_students = [
         {'first_name': 'Саша'},
     ],
 ]
-# ???
+for j in range(len(school_students)):
+    print(f'Самое частое имя среди учеников {j+1} класса: {Counter([i["first_name"] for i in school_students[j]]).most_common(1)[0][0]}')
+    
 
 
 # Задание 4
@@ -72,7 +76,15 @@ is_male = {
     'Миша': True,
     'Даша': False,
 }
-# ???
+for i in range(len(school)):
+    name_list = [(school[i]['students'][j]['first_name']) for j in range(len(school[i]['students']))]
+    count_girls,count_boys=0,0
+    for name in name_list:
+        if is_male[name]==False:
+            count_girls+=1
+        else:
+            count_boys+=1      
+    print(f"Класс {school[i]['class']}: девочки {count_girls}, мальчики {count_boys}")
 
 
 # Задание 5
@@ -91,5 +103,23 @@ is_male = {
     'Олег': True,
     'Миша': True,
 }
-# ???
 
+''
+count_list=[]
+for class_s in school:
+    list_class=class_s.get('students')
+    class_g=0
+    class_b=0
+    for names in list_class:
+        name=names.get('first_name')
+        if is_male[name]:
+            class_b+=1
+        else:
+            class_g+=1
+    count_list.append({"class":class_s.get('class'),"boys": class_b, 'girls': class_g})        
+
+class_girls_max = [g.get('class') for g in count_list if g.get('girls') ==  max([g.get('girls') for g in count_list])][0]
+class_boys_max = [b.get('class') for b in count_list if b.get('boys') ==  max([b.get('boys') for b in count_list])][0]
+
+print(f'Больше всего мальчиков в классе {class_boys_max}')
+print(f'Больше всего девочек в классе {class_girls_max}')    
