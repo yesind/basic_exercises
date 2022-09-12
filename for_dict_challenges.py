@@ -14,8 +14,12 @@ students = [
     {'first_name': 'Маша'},
     {'first_name': 'Петя'},
 ]
-[print(f"{j}: {k}") for j,k in Counter([i["first_name"] for i in students]).items()]
-
+count_list=[]
+for dic_student in students:
+    count_list.append(dic_student["first_name"])
+count_dic=Counter(count_list)
+for name, count in count_dic.items():
+    print(f"{name}: {count}")
 
 # Задание 2
 # Дан список учеников, нужно вывести самое часто повторящееся имя
@@ -28,7 +32,11 @@ students = [
     {'first_name': 'Маша'},
     {'first_name': 'Оля'},
 ]
-print(f'Самое частое имя среди учеников: {Counter([i["first_name"] for i in students]).most_common(1)[0][0]}')
+count_list=[]
+for dic_student in students:
+    count_list.append(dic_student["first_name"])
+count_dic=Counter(count_list)
+print(f'Самое частое имя среди учеников: {Counter(count_list).most_common(1)[0][0]}')
 
 
 # Задание 3
@@ -54,7 +62,11 @@ school_students = [
     ],
 ]
 for j in range(len(school_students)):
-    print(f'Самое частое имя среди учеников {j+1} класса: {Counter([i["first_name"] for i in school_students[j]]).most_common(1)[0][0]}')
+    count_list=[]
+    for dic_student in students:
+        count_list.append(dic_student["first_name"])
+    count_dic=Counter(count_list)
+    print(f'Самое частое имя среди учеников {j+1} класса: {count_dic.most_common(1)[0][0]}')
     
 
 
@@ -76,15 +88,15 @@ is_male = {
     'Миша': True,
     'Даша': False,
 }
-for i in range(len(school)):
-    name_list = [(school[i]['students'][j]['first_name']) for j in range(len(school[i]['students']))]
+for school_class in school:           
+    name_list = [student['first_name'] for student in school_class['students']]
     count_girls,count_boys=0,0
     for name in name_list:
-        if is_male[name]==False:
-            count_girls+=1
+        if is_male[name]:
+            count_boys+=1
         else:
-            count_boys+=1      
-    print(f"Класс {school[i]['class']}: девочки {count_girls}, мальчики {count_boys}")
+            count_girls+=1      
+    print(f"Класс {school_class['class']}: девочки {count_girls}, мальчики {count_boys}")
 
 
 # Задание 5
@@ -106,20 +118,25 @@ is_male = {
 
 ''
 count_list=[]
+list_class=[]
 for class_s in school:
-    list_class=class_s.get('students')
+    list_class.append(class_s['students'])
     class_g=0
     class_b=0
-    for names in list_class:
-        name=names.get('first_name')
-        if is_male[name]:
-            class_b+=1
-        else:
-            class_g+=1
-    count_list.append({"class":class_s.get('class'),"boys": class_b, 'girls': class_g})        
+    for students in list_class:
+        for names in students:
+            name=names['first_name']
+            if is_male[name]:
+                class_b+=1
+            else:
+                class_g+=1
+        count_list.append({"class":class_s['class'],"boys": class_b, 'girls': class_g})
 
-class_girls_max = [g.get('class') for g in count_list if g.get('girls') ==  max([g.get('girls') for g in count_list])][0]
-class_boys_max = [b.get('class') for b in count_list if b.get('boys') ==  max([b.get('boys') for b in count_list])][0]
+girls_max =max ([g_count['girls'] for g_count in count_list])
+boys_max= max([b_count['boys'] for b_count in count_list])
+
+class_girls_max = [g_count['class'] for g_count in count_list if g_count['girls'] ==  girls_max][0]
+class_boys_max = [b_count['class'] for b_count in count_list if b_count['boys'] == boys_max][0]
 
 print(f'Больше всего мальчиков в классе {class_boys_max}')
-print(f'Больше всего девочек в классе {class_girls_max}')    
+print(f'Больше всего девочек в классе {class_girls_max}') 
