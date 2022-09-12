@@ -24,12 +24,13 @@ def full_moon(update, context):
     s=update.message.text.split()[1]
     try: 
         date=datetime.strptime(update.message.text.split()[1], '%d/%m/%Y')
-        update.message.reply_text(s)
-    
-        update.message.reply_text(f'Следующие полнолуние {ephem.next_full_moon(date)}')
     except ValueError:
         update.message.reply_text("Вы указали некорректную дату")
-        update.message.reply_text("Корректный запрос /next_full_moon DD/MM/YYYY")
+        update.message.reply_text("Корректный запрос /next_full_moon DD/MM/YYYY")   
+    
+    update.message.reply_text(s)
+    update.message.reply_text(f'Следующие полнолуние {ephem.next_full_moon(date)}')
+    
 
 def talk_to_me(update, context):
     user_text = update.message.text 

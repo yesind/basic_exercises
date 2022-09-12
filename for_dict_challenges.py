@@ -61,12 +61,12 @@ school_students = [
         {'first_name': 'Саша'},
     ],
 ]
-for j in range(len(school_students)):
+for j,s_class in enumerate(school_students,start=1):
     count_list=[]
-    for dic_student in students:
+    for dic_student in s_class:
         count_list.append(dic_student["first_name"])
     count_dic=Counter(count_list)
-    print(f'Самое частое имя среди учеников {j+1} класса: {count_dic.most_common(1)[0][0]}')
+    print(f'Самое частое имя среди учеников {j} класса: {count_dic.most_common(1)[0][0]}')
     
 
 

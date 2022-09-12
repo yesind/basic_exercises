@@ -125,7 +125,7 @@ dmypy.json
 city.csv
 settings.py
 moon.py
-bot_level_3_cities.py
+bot.log
 bot_level_3_cities.log
 bot_level_2.log
 .DS_Store

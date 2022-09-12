@@ -44,8 +44,8 @@ groups = [
     ['Оля', 'Петя', 'Гриша'],
 ]
 print(f'Всего {len(groups)} групп(ы).')
-for i,group in enumerate(groups):
-    print(f'Группа {i+1}: {len(group)} ученика.') 
+for i,group in enumerate(groups,start=1):
+    print(f'Группа {i}: {len(group)} ученика.') 
 
 
 # Задание 5
@@ -59,6 +59,6 @@ groups = [
     ['Оля', 'Петя', 'Гриша'],
     ['Вася', 'Маша', 'Саша', 'Женя'],
 ]
-for i,group in enumerate(groups):
+for i,group in enumerate(groups,start=1):
     s=', '.join(name for name in group)
-    print(f'Группа {i+1}: {s}')
+    print(f'Группа {i}: {s}')
