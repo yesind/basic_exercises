@@ -8,7 +8,7 @@ logging.basicConfig(filename='bot_level_3_cities.log', level=logging.INFO)
 
 def greet_user(update, context):
     logging.info('Вызван /start')
-    update.message.reply_text('Привет, пользователь! Ты вызвал команду /start\nДавай сыграем в города, набери /cities и добавишь название города на русском языке.')
+    update.message.reply_text('Привет, пользователь! Ты вызвал команду /start\nДавай сыграем в города, набери /cities и добавь название города на русском языке.')
 
 def cities_game(update, context):   #функция игры в города
     logging.info('Вызвана команда /cities') 
@@ -16,32 +16,26 @@ def cities_game(update, context):   #функция игры в города
     logging.info(user_word)
     
     game_list = user_game_list(context.user_data)         #создаем пустой списк для игры       
-    all_cities = user_cities_list(context.user_data)
-        
+    all_dic_cities = user_cities_list(context.user_data)
+    all_cities = all_dic_cities.keys()    
     rest_all_cities=set(all_cities)-set(game_list) #вычисляем города, которые остались для игры
-    user_word = " ".join([word.capitalize() for word in user_word]) # приводим к заглавной первой букве введенный текст
-    logging.info(game_list)
-        
+    user_word = " ".join([word.lower() for word in user_word]) # приводим к строчной первой букве введенный текст
+    logging.info(game_list)   
 
     if user_word not in rest_all_cities:   # Проверяем первый раз ли вводится город
-        update.message.reply_text("Вы вводили такое название города") 
+        update.message.reply_text("Вы вводили такое название города/Такого города нет") 
     elif len(game_list)>=1 and game_list[-1][-1]!=user_word.lower()[0] and (game_list[-1][-1] not in 'йьъы'): # Проверяем корректность первой буквы
-        update.message.reply_text(f"Ваш город должен начинаться на {game_list[-1][-1]}")
+        update.message.reply_text(f"Ваш город должен начинаться на {game_list[-1][-1].upper()}")
     elif len(game_list)>=1 and game_list[-1][-2]!=user_word.lower()[0] and (game_list[-1][-1] in 'йьъы'): # Проверяем корректность второй буквы
-        update.message.reply_text(f"Ваш город должен начинаться на {game_list[-1][-2]}")
-
+        update.message.reply_text(f"Ваш город должен начинаться на {game_list[-1][-2].upper()}")
     else:
-        #game_list.append(user_word)   # добавляем слова для исклюючения
         rest_all_cities.discard(user_word) # исключаем слово
-
-        user_word_lower = user_word.lower()
-
         if user_word[-1] in 'йьъы': # выбираем на какую букву нужно искать слово и ищем слово
-            bot_word=random.choice([city_letter for city_letter in rest_all_cities if city_letter[0].lower() == user_word_lower[-2]])
+            bot_word=random.choice([city_letter for city_letter in rest_all_cities if city_letter[0].lower() == user_word[-2]])
         else:
-            bot_word=random.choice([city_letter for city_letter in rest_all_cities if city_letter[0].lower() == user_word_lower[-1]])                       
+            bot_word=random.choice([city_letter for city_letter in rest_all_cities if city_letter[0].lower() == user_word[-1]])                       
         game_list.append(bot_word) #добавлем слово в список игры
-        update.message.reply_text(bot_word) 
+        update.message.reply_text(all_dic_cities[bot_word]) 
 
 def user_game_list(user_data):
     if 'game_list' not in user_data:
@@ -49,9 +43,13 @@ def user_game_list(user_data):
     return user_data['game_list']
 
 def user_cities_list(user_data):
-    file = pd.read_csv('city.csv')          #создаем список со всеми городами
-    user_data['cities_list']=file['city'].tolist()
-    return user_data['cities_list']
+    if 'cities_dict' not in user_data:
+        file = pd.read_csv('city.csv')          #создаем список со всеми городами
+        set_of_cities=file['city'].tolist()
+        list_cities_lower= [i.lower() for i in set_of_cities]
+        dic_cities=dict(zip(list_cities_lower,set_of_cities))
+        user_data['cities_dict']=dic_cities
+    return user_data['cities_dict']
 
 
 def talk_to_me(update, context):
