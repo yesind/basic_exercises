@@ -29,7 +29,7 @@ def cities_game(update, context):   #функция игры в города
     elif len(game_list)>=1 and game_list[-1][-2]!=user_word.lower()[0] and (game_list[-1][-1] in 'йьъы'): # Проверяем корректность второй буквы
         update.message.reply_text(f"Ваш город должен начинаться на {game_list[-1][-2].upper()}")
     else:
-        rest_all_cities.discard(user_word) # исключаем слово
+        rest_all_cities.discard(user_word) # исключаем слово             !!!!!!!!!!!!!
         if user_word[-1] in 'йьъы': # выбираем на какую букву нужно искать слово и ищем слово
             bot_word=random.choice([city_letter for city_letter in rest_all_cities if city_letter[0].lower() == user_word[-2]])
         else:
@@ -46,9 +46,7 @@ def user_cities_list(user_data):
     if 'cities_dict' not in user_data:
         file = pd.read_csv('city.csv')          #создаем список со всеми городами
         set_of_cities=file['city'].tolist()
-        list_cities_lower= [i.lower() for i in set_of_cities]
-        dic_cities=dict(zip(list_cities_lower,set_of_cities))
-        user_data['cities_dict']=dic_cities
+        user_data['cities_dict']= {city.lower():city for city in set_of_cities} #создаем словарь городов пользователя !!!!!!!!!!
     return user_data['cities_dict']
 
 

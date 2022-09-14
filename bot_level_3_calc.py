@@ -10,60 +10,49 @@ def greet_user(update, context):
 
 def list_for_calc(string):
     all_list=[]
-    while ('+' in string or '/'in string or '*'in string or '-' in string):
-        for char in string:
-            if char in '+/*-':
-                index=string.index(char)
-                all_list.append(float(string[:index]))
-                all_list.append(char)
-                string=string[index+1:]
-    else:
-        all_list.append(float(string))     
+    for char in string:
+        if char in '+/*-':
+            index=string.index(char)
+            all_list.append(float(string[:index]))
+            all_list.append(char)
+            string=string[index+1:]
+    all_list.append(float(string))     
     return all_list
 
 def string_calc(update, context):
     logging.info('Вызвана команда /calc')
-    string_input_split=update.message.text.split()[1:]
-    string_input=''.join(string_input_split)
-    logging.info(string_input)
+    string_input=update.message.text.replace('/calc','').replace(' ','')  
+   
     try: 
         if string_input[0] == "-":
             all_list=list_for_calc('0'+string_input)
         else:
             all_list=list_for_calc(string_input)
 
-        while ('*' in all_list or '/'in all_list):
+        while '*' in all_list or '/' in all_list:
             for i, char in enumerate(all_list):
                 if str(char) in '/*':
-                    match char:
-                        case'/':
-                            all_list[i-1]=all_list[i-1]/all_list[i+1]
-                            all_list.pop(i+1)
-                            all_list.pop(i)
-            
-                        case'*':
-                            all_list[i-1]=all_list[i-1]*all_list[i+1]
-                            all_list.pop(i+1)
-                            all_list.pop(i)
-
-        while ('+' in all_list or '-'in all_list):
+                    if str(char) in '/':
+                        try:
+                            all_list[i-1]=all_list[i-1]/all_list[i+1]        
+                        except ZeroDivisionError:
+                            update.message.reply_text('Напоминаю, нельзя делить на ноль нельзя')
+                    if str(char) in '*':
+                        all_list[i-1]=all_list[i-1]*all_list[i+1]
+                    all_list.pop(i+1)
+                    all_list.pop(i)   
+        
+        while '+' in all_list or '-'in all_list:
             for i, char in enumerate(all_list):
                 if str(char) in '-+':
-                    match char:
-                        case'-':
-                            all_list[i-1]=all_list[i-1]-all_list[i+1]
-                            all_list.pop(i+1)
-                            all_list.pop(i)
-            
-                        case'+':
-                            all_list[i-1]=all_list[i-1]+all_list[i+1]
-                            all_list.pop(i+1)
-                            all_list.pop(i)        
-    
+                    if str(char) in '-':
+                        all_list[i-1]=all_list[i-1]-all_list[i+1]        
+                    if str(char) in '+':
+                        all_list[i-1]=all_list[i-1]+all_list[i+1]
+                    all_list.pop(i+1)
+                    all_list.pop(i)        
         update.message.reply_text(all_list[0])
-    except ZeroDivisionError:
-        update.message.reply_text('Напоминаю, нельзя делить на ноль нельзя')
-    except (SyntaxError,ValueError):
+    except ValueError:
         update.message.reply_text('Калькулятор не понимает буквы')     
 
 def talk_to_me(update, context):
