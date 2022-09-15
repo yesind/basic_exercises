@@ -10,13 +10,14 @@ def greet_user(update, context):
 
 def list_for_calc(string):
     all_list=[]
-    for char in string:
+    ind_past=0
+    for index,char in enumerate(string):
         if char in '+/*-':
-            index=string.index(char)
-            all_list.append(float(string[:index]))
+            all_list.append(float(string[ind_past:index]))
             all_list.append(char)
-            string=string[index+1:]
-    all_list.append(float(string))     
+            ind_past=index+1
+            string_end=string[index+1:]
+    all_list.append(float(string_end))     
     return all_list
 
 def string_calc(update, context):
@@ -32,12 +33,12 @@ def string_calc(update, context):
         while '*' in all_list or '/' in all_list:
             for i, char in enumerate(all_list):
                 if str(char) in '/*':
-                    if str(char) in '/':
+                    if char == '/':
                         try:
                             all_list[i-1]=all_list[i-1]/all_list[i+1]        
                         except ZeroDivisionError:
                             update.message.reply_text('Напоминаю, нельзя делить на ноль нельзя')
-                    if str(char) in '*':
+                    if char == '*':
                         all_list[i-1]=all_list[i-1]*all_list[i+1]
                     all_list.pop(i+1)
                     all_list.pop(i)   
@@ -45,9 +46,9 @@ def string_calc(update, context):
         while '+' in all_list or '-'in all_list:
             for i, char in enumerate(all_list):
                 if str(char) in '-+':
-                    if str(char) in '-':
+                    if char == '-':
                         all_list[i-1]=all_list[i-1]-all_list[i+1]        
-                    if str(char) in '+':
+                    if char == '+':
                         all_list[i-1]=all_list[i-1]+all_list[i+1]
                     all_list.pop(i+1)
                     all_list.pop(i)        
