@@ -10,32 +10,35 @@ def greet_user(update, context):
     logging.info('Вызван /start')
     update.message.reply_text('Привет, пользователь! Ты вызвал команду /start\nДавай сыграем в города, набери /cities и добавь название города на русском языке.')
 
+
 def cities_game(update, context):   #функция игры в города
     logging.info('Вызвана команда /cities') 
-    user_word=update.message.text.split()[1:] #Берем список слов после /start
-    logging.info(user_word)
-    
+    user_word=" ".join(context.args).lower() #Берем список слов после /start + приводим к строчной первой букве введенный текст
     game_list = user_game_list(context.user_data)         #создаем пустой списк для игры       
-    all_dic_cities = user_cities_list(context.user_data)
-    all_cities = all_dic_cities.keys()    
-    rest_all_cities=set(all_cities)-set(game_list) #вычисляем города, которые остались для игры
-    user_word = " ".join([word.lower() for word in user_word]) # приводим к строчной первой букве введенный текст
+    all_dic_cities = user_cities_list(context.user_data)   
     logging.info(game_list)   
 
-    if user_word not in rest_all_cities:   # Проверяем первый раз ли вводится город
+    if user_word not in context.user_data['cities_dict']:   # Проверяем первый раз ли вводится город
         update.message.reply_text("Вы вводили такое название города/Такого города нет") 
-    elif len(game_list)>=1 and game_list[-1][-1]!=user_word.lower()[0] and (game_list[-1][-1] not in 'йьъы'): # Проверяем корректность первой буквы
+    elif len(game_list)>0 and game_list[-1][-1]=='й' and user_word[0] not in 'йи': # Проверяем корректность, если слово бота заканчивается на й
+        update.message.reply_text(f"Ваш город должен начинаться на И или Й")    
+    elif len(game_list)>0 and game_list[-1][-1]!=user_word[0] and game_list[-1][-1]!='й' and (game_list[-1][-1] not in 'ьъы'): # Проверяем корректность первой буквы
         update.message.reply_text(f"Ваш город должен начинаться на {game_list[-1][-1].upper()}")
-    elif len(game_list)>=1 and game_list[-1][-2]!=user_word.lower()[0] and (game_list[-1][-1] in 'йьъы'): # Проверяем корректность второй буквы
+    elif len(game_list)>0 and game_list[-1][-2]!=user_word[0] and game_list[-1][-1]!='й'and (game_list[-1][-1] in 'ьъы'): # Проверяем корректность второй буквы
         update.message.reply_text(f"Ваш город должен начинаться на {game_list[-1][-2].upper()}")
     else:
-        rest_all_cities.discard(user_word) # исключаем слово             !!!!!!!!!!!!!
-        if user_word[-1] in 'йьъы': # выбираем на какую букву нужно искать слово и ищем слово
-            bot_word=random.choice([city_letter for city_letter in rest_all_cities if city_letter[0].lower() == user_word[-2]])
+        context.user_data['cities_dict'].pop(user_word)
+        game_list.append(user_word)
+        if user_word[-1] in 'ьъы': # выбираем на какую букву нужно искать слово и ищем слово
+            bot_word=random.choice([city_letter for city_letter in context.user_data['cities_dict'] if city_letter[0] == user_word[-2]])
+        elif user_word[-1] == 'й': 
+            bot_word=random.choice([city_letter for city_letter in context.user_data['cities_dict'] if city_letter[0] == 'и' or city_letter[0] == 'й'])
         else:
-            bot_word=random.choice([city_letter for city_letter in rest_all_cities if city_letter[0].lower() == user_word[-1]])                       
+            bot_word=random.choice([city_letter for city_letter in context.user_data['cities_dict'] if city_letter[0] == user_word[-1]])                       
         game_list.append(bot_word) #добавлем слово в список игры
-        update.message.reply_text(all_dic_cities[bot_word]) 
+        update.message.reply_text(all_dic_cities[bot_word])
+        context.user_data['cities_dict'].pop(bot_word)
+        
 
 def user_game_list(user_data):
     if 'game_list' not in user_data:
